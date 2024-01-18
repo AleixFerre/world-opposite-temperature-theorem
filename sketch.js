@@ -4,25 +4,26 @@ const increment = 0.01;
 
 let theta = 0;
 
-let amount;
-
+const gif = false;
 const numbers = [];
 const numbers2 = [];
 
 function setup() {
-  amount = TAU / increment;
-  const d = TAU / 0.01;
+  const amount = TAU / increment;
   createCanvas(floor(amount), noiseLevel, WEBGL);
-  // saveGif('yourmoma.gif', d, {units: 'frames'});
+  if (gif) {
+    const d = TAU / 0.01;
+    saveGif("graph_intersections.gif", d, { units: "frames" });
+  }
 }
 
 function draw() {
   background(255);
 
-  for (let fi = 0; fi < TAU; fi += 0.01) {
-    const x = noiseRadius * sin(fi) * cos(theta);
-    const y = noiseRadius * sin(fi) * sin(theta);
-    const z = noiseRadius * cos(fi);
+  for (let phi = 0; phi < TAU; phi += 0.01) {
+    const x = noiseRadius * sin(phi) * cos(theta);
+    const y = noiseRadius * sin(phi) * sin(theta);
+    const z = noiseRadius * cos(phi);
     numbers.push(noiseLevel * noise(x + 50, y + 50, z + 50));
   }
   for (let i = floor(numbers.length / 2); i < numbers.length; i++) {
@@ -47,7 +48,6 @@ function draw() {
   clearNumbers();
   theta += 0.01;
   if (theta > TAU) theta = 0;
-  // noLoop();
 }
 
 function renderNumbers(num) {
@@ -56,9 +56,7 @@ function renderNumbers(num) {
 
   noFill();
   beginShape();
-
   drawGraph(num);
-
   endShape();
   pop();
 }
@@ -83,3 +81,4 @@ function drawGraph(num) {
 function clearNumbers() {
   numbers.length = numbers2.length = 0;
 }
+  
