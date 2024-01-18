@@ -1,6 +1,5 @@
 # World Opposite Temperature Theorem
 
-## Description
 The World Opposite Temperature Theorem is a visual exploration of mathematical patterns using p5.js. The code generates mesmerizing graphs based on noise and geometric calculations, creating intriguing visual representations.
 
 ## Setup
