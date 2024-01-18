@@ -5,7 +5,7 @@ The World Opposite Temperature Theorem is a visual exploration of mathematical p
 
 ## Setup
 1. Install a code editor and a local server if not already installed.
-2. Clone the repository: `git clone https://github.com/your-username/world-opposite-temperature-theorem.git`
+2. Clone the repository: `git clone https://github.com/AleixFerre/world-opposite-temperature-theorem.git`
 3. Open the project in your code editor.
 4. Run a local server and open the project in a web browser.
 
