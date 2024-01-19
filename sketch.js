@@ -8,7 +8,11 @@ const gif = false;
 const numbers = [];
 const numbers2 = [];
 
-const sketch_top = (p) => {
+const color_numbers1 = [248, 3, 252];
+const color_numbers2 = [34, 227, 9];
+const color_intersections = [94, 93, 227];
+
+const sketch_graph = (p) => {
   p.setup = function () {
     const amount = p.TAU / increment;
     p.createCanvas(p.floor(amount), noiseLevel, p.WEBGL);
@@ -36,13 +40,13 @@ const sketch_top = (p) => {
 
     p.strokeWeight(1);
 
-    p.stroke(248, 3, 252);
+    p.stroke(...color_numbers1);
     renderNumbers(numbers, p);
 
-    p.stroke(34, 227, 9);
+    p.stroke(...color_numbers2);
     renderNumbers(numbers2, p);
 
-    p.stroke(94, 93, 227);
+    p.stroke(...color_intersections);
     p.strokeWeight(5);
     renderIntersection(numbers, numbers2, p);
 
@@ -63,7 +67,7 @@ const sketch_top = (p) => {
   }
 };
 
-const sketch_bottom = (p) => {
+const sketch_earth = (p) => {
   p.preload = function () {
     p.img = p.loadImage("assets/globe.jpg");
   };
@@ -79,19 +83,38 @@ const sketch_bottom = (p) => {
     p.texture(p.img);
     p.noStroke();
     p.sphere(100);
-    
-    p.fill('red');
-    p.stroke('red');
-    p.rotateX(p.frameCount * 0.04);
-    p.rotateY(p.frameCount * 0.03);
-    p.rotateZ(p.frameCount * 0.01);
-    p.torus(110, 2);
 
+    p.rotateX(theta);
+    p.fill("orange");
+    p.torus(110, 3);
   };
 };
 
-const p5_top = new p5(sketch_top);
-const p5_bottom = new p5(sketch_bottom);
+const sketch_texture = (p) => {
+  p.setup = function () {
+    p.amount = p.TAU / increment;
+    p.createCanvas(p.amount, p.amount, p.WEBGL);
+    p.background(0);
+  };
+
+  p.draw = function () {
+    p.stroke(255);
+    p.strokeWeight(5);
+    p.noFill();
+    p.circle(20, 20);
+
+    renderIntersectionTexture(numbers, numbers2, p);
+    if (p.frameCount > p.amount) {
+      console.log("sacabao");
+      p.noLoop();
+    }
+  };
+};
+
+// Create the multiple p5 instances
+new p5(sketch_graph);
+new p5(sketch_earth);
+new p5(sketch_texture);
 
 function renderNumbers(num, p) {
   p.push();
@@ -111,6 +134,19 @@ function renderIntersection(num, num2, p) {
     if (num[x] == num2[x]) p.point(x, num[x]);
     if (num[x] > num2[x] && num[x + 1] < num2[x + 1]) p.point(x, (num[x] + num2[x]) / 2);
     if (num[x] < num2[x] && num[x + 1] > num2[x + 1]) p.point(x, (num[x] + num2[x]) / 2);
+  }
+  p.pop();
+}
+
+function renderIntersectionTexture(num, num2, p) {
+  p.stroke(255);
+  p.strokeWeight(10);
+  p.push();
+  p.translate(-p.width / 2, -p.height / 2);
+  for (let x = 0; x < num.length - 1; x++) {
+    if (num[x] == num2[x]) p.point(p.frameCount, num[x]);
+    if (num[x] > num2[x] && num[x + 1] < num2[x + 1]) p.point(p.frameCount, (num[x] + num2[x]) / 2);
+    if (num[x] < num2[x] && num[x + 1] > num2[x + 1]) p.point(p.frameCount, (num[x] + num2[x]) / 2);
   }
   p.pop();
 }
