@@ -1,12 +1,12 @@
-const noiseLevel = 100;
-const noiseRadius = 10;
-const increment = 0.01;
+const noiseLevel = 200;
+const noiseRadius = 1.5;
+const increment = 0.005;
 
 let theta = 0;
 
 const gif = false;
-const numbers = [];
-const numbers2 = [];
+let numbers = [];
+let numbers2 = [];
 
 const color_numbers1 = [248, 3, 252];
 const color_numbers2 = [34, 227, 9];
@@ -15,7 +15,7 @@ const color_intersections = [94, 93, 227];
 const sketch_graph = (p) => {
   p.setup = function () {
     const amount = p.TAU / increment;
-    p.createCanvas(p.floor(amount), noiseLevel, p.WEBGL);
+    p.createCanvas(Math.floor(amount), noiseLevel, p.WEBGL);
     if (gif) {
       const d = p.TAU / 0.01;
       p.saveGif("graph_intersections.gif", d, { units: "frames" });
@@ -24,35 +24,21 @@ const sketch_graph = (p) => {
 
   p.draw = function () {
     p.background(255);
+    numbers = createArray(p);
+    numbers2 = shiftArray(numbers,numbers.length / 2);
 
-    for (let phi = 0; phi < p.TAU; phi += 0.01) {
-      const x = noiseRadius * p.sin(phi) * p.cos(theta);
-      const y = noiseRadius * p.sin(phi) * p.sin(theta);
-      const z = noiseRadius * p.cos(phi);
-      numbers.push(noiseLevel * p.noise(x + 50, y + 50, z + 50));
-    }
-    for (let i = p.floor(numbers.length / 2); i < numbers.length; i++) {
-      numbers2.push(numbers[i]);
-    }
-    for (let i = 0; i < p.floor(numbers.length / 2); i++) {
-      numbers2.push(numbers[i]);
-    }
+    p.stroke(...color_numbers1);p.strokeWeight(1);renderNumbers(numbers, p);
+    p.stroke(...color_numbers2);p.strokeWeight(1);renderNumbers(numbers2, p);
 
-    p.strokeWeight(1);
-
-    p.stroke(...color_numbers1);
-    renderNumbers(numbers, p);
-
-    p.stroke(...color_numbers2);
-    renderNumbers(numbers2, p);
-
-    p.stroke(...color_intersections);
-    p.strokeWeight(5);
-    renderIntersection(numbers, numbers2, p);
+    p.stroke(...color_intersections);p.strokeWeight(5);renderIntersection(numbers, numbers2, p);
 
     clearNumbers();
     theta += 0.01;
-    if (theta > p.TAU) theta = 0;
+    
+    if (theta > p.TAU) {
+      theta -= p.TAU;
+    }
+    
   };
 
   function renderNumbers(num, p) {
@@ -95,37 +81,60 @@ const sketch_texture = (p) => {
     p.amount = p.TAU / increment;
     p.createCanvas(p.amount, p.amount, p.WEBGL);
     p.background(0);
+    numbers = createArray(p);
+    numbers2 = shiftArray(numbers,numbers.length / 2);
+    console.log(numbers);
+    //renderFullIntersectionTexture(p)
   };
 
   p.draw = function () {
     p.stroke(255);
-    p.strokeWeight(5);
+    p.strokeWeight(2);
     p.noFill();
     p.circle(20, 20);
-
+    numbers = createArray(p);
+    numbers2 = shiftArray(numbers,numbers.length / 2);
     renderIntersectionTexture(numbers, numbers2, p);
-    if (p.frameCount > p.amount) {
-      console.log("sacabao");
-      p.noLoop();
-    }
   };
 };
 
-// Create the multiple p5 instances
+
+/** -------------------------- */
+
+
+/** DRAW */
 new p5(sketch_graph);
-new p5(sketch_earth);
+//new p5(sketch_earth);
 new p5(sketch_texture);
 
-function renderNumbers(num, p) {
-  p.push();
-  p.translate(-p.width / 2, -p.height / 2);
 
-  p.noFill();
-  p.beginShape();
-  drawGraph(num, p);
-  p.endShape();
-  p.pop();
+
+/** -------------------------- */
+
+
+
+/** CREATORS */
+
+function createArray(p,t){
+  const pos = [50,50,50]
+  const l_array = []
+  for (let phi = 0; phi < p.TAU; phi += increment) {
+    const x = noiseRadius * p.sin(phi) * p.cos(t);
+    const y = noiseRadius * p.sin(phi) * p.sin(t);
+    const z = noiseRadius * p.cos(phi);
+    l_array.push(noiseLevel * p.noise(x + pos[0], y + pos[1], z + pos[2]));
+  }
+  return l_array
 }
+function shiftArray(array,n){
+  let l_array = [];
+  for(let x = 0; x < array.length; x++){
+    l_array.push(array[((x+Math.floor(n))%array.length)]);
+  }
+  return l_array;
+}
+
+/** RENDERS */
 
 function renderIntersection(num, num2, p) {
   p.push();
@@ -137,26 +146,68 @@ function renderIntersection(num, num2, p) {
   }
   p.pop();
 }
-
 function renderIntersectionTexture(num, num2, p) {
   p.stroke(255);
-  p.strokeWeight(10);
+  p.strokeWeight(5);
   p.push();
   p.translate(-p.width / 2, -p.height / 2);
   for (let x = 0; x < num.length - 1; x++) {
-    if (num[x] == num2[x]) p.point(p.frameCount, num[x]);
-    if (num[x] > num2[x] && num[x + 1] < num2[x + 1]) p.point(p.frameCount, (num[x] + num2[x]) / 2);
-    if (num[x] < num2[x] && num[x + 1] > num2[x + 1]) p.point(p.frameCount, (num[x] + num2[x]) / 2);
+    
+    if (num[x] == num2[x]) renderITPoints(p.frameCount, x);
+    if (num[x] > num2[x] && num[x + 1] < num2[x + 1]) renderITPoints(p.frameCount, x/num.length*p.amount,p);
+    if (num[x] < num2[x] && num[x + 1] > num2[x + 1]) renderITPoints(p.frameCount, x/num.length*p.amount,p);
+    
   }
   p.pop();
 }
+function renderITPoints(x,y,p) {
+  p.point(x*2, y*2);
+  p.point((x*2+p.amount/2)%p.amount, p.amount-y*2);
+}
+
+function renderFullIntersectionTexture(p) { // TODO
+  /*
+  let num = [];
+  let num2 = [];
+  p.stroke(255);
+  p.strokeWeight(5);
+  p.push();
+  p.translate(-p.width / 2, -p.height / 2);
+  for(let i = 0; i<p.TAU; i+=0.001){
+    num=createArray(p,i);
+    num2=shiftArray(num,num.length);
+    for (let x = 0; x < num.length - 1; x++) {
+      
+      if (num[x] == num2[x]) renderITPoints(p.frameCount, x);
+      if (num[x] > num2[x] && num[x + 1] < num2[x + 1]) renderITPoints(p.frameCount, x/num.length*p.amount,p);
+      if (num[x] < num2[x] && num[x + 1] > num2[x + 1]) renderITPoints(p.frameCount, x/num.length*p.amount,p);
+      
+    }
+  }
+  p.pop();
+  */
+}
+
+/** OTHER */
 
 function drawGraph(num, p) {
   for (let i = 0; i < num.length; i++) {
     p.vertex(i, num[i]);
   }
 }
-
 function clearNumbers() {
   numbers.length = numbers2.length = 0;
+}
+function renderNumbers(num, p) {
+  console.log(weight);
+  p.strokeWeight(weight);
+  p.stroke(...color);
+  p.push();
+  p.translate(-p.width / 2, -p.height / 2);
+
+  p.noFill();
+  p.beginShape();
+  drawGraph(num, p);
+  p.endShape();
+  p.pop();
 }
