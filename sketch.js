@@ -24,7 +24,7 @@ const sketch_graph = (p) => {
 
   p.draw = function () {
     p.background(255);
-    numbers = createArray(p);
+    numbers = createArray(p,theta);
     numbers2 = shiftArray(numbers,numbers.length / 2);
 
     p.stroke(...color_numbers1);p.strokeWeight(1);renderNumbers(numbers, p);
@@ -81,7 +81,7 @@ const sketch_texture = (p) => {
     p.amount = p.TAU / increment;
     p.createCanvas(p.amount, p.amount, p.WEBGL);
     p.background(0);
-    numbers = createArray(p);
+    numbers = createArray(p,theta);
     numbers2 = shiftArray(numbers,numbers.length / 2);
     console.log(numbers);
     //renderFullIntersectionTexture(p)
@@ -92,7 +92,7 @@ const sketch_texture = (p) => {
     p.strokeWeight(2);
     p.noFill();
     p.circle(20, 20);
-    numbers = createArray(p);
+    numbers = createArray(p,theta);
     numbers2 = shiftArray(numbers,numbers.length / 2);
     renderIntersectionTexture(numbers, numbers2, p);
   };
