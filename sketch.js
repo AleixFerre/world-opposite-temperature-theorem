@@ -3,6 +3,7 @@ const noiseRadius = 1.5;
 const increment = 0.005;
 
 let theta = 0;
+let first = true;
 
 const gif = false;
 let numbers = [];
@@ -84,16 +85,21 @@ const sketch_texture = (p) => {
     numbers = createArray(p,theta);
     numbers2 = shiftArray(numbers,numbers.length / 2);
     console.log(numbers);
-    //renderFullIntersectionTexture(p)
+    
   };
 
   p.draw = function () {
+    
     p.stroke(255);
     p.strokeWeight(2);
     p.noFill();
     p.circle(20, 20);
     numbers = createArray(p,theta);
     numbers2 = shiftArray(numbers,numbers.length / 2);
+    if(first){
+      //renderIntersectionTextureF(numbers,numbers2,p);
+      first = false;
+    }
     renderIntersectionTexture(numbers, numbers2, p);
   };
 };
@@ -161,31 +167,30 @@ function renderIntersectionTexture(num, num2, p) {
   p.pop();
 }
 function renderITPoints(x,y,p) {
+  if(!p)return;
   p.point(x*2, y*2);
   p.point((x*2+p.amount/2)%p.amount, p.amount-y*2);
 }
 
-function renderFullIntersectionTexture(p) { // TODO
-  /*
-  let num = [];
-  let num2 = [];
-  p.stroke(255);
-  p.strokeWeight(5);
-  p.push();
-  p.translate(-p.width / 2, -p.height / 2);
+function renderIntersectionTextureF(num, num2, p) {
+  console.log(p);
+  if(!p)return;
   for(let i = 0; i<p.TAU; i+=0.001){
     num=createArray(p,i);
     num2=shiftArray(num,num.length);
-    for (let x = 0; x < num.length - 1; x++) {
-      
-      if (num[x] == num2[x]) renderITPoints(p.frameCount, x);
-      if (num[x] > num2[x] && num[x + 1] < num2[x + 1]) renderITPoints(p.frameCount, x/num.length*p.amount,p);
-      if (num[x] < num2[x] && num[x + 1] > num2[x + 1]) renderITPoints(p.frameCount, x/num.length*p.amount,p);
-      
-    }
+    renderIntersectionTexture(num, num2, p)
+  }
+}
+
+function renderFullIntersectionTexture(p) { // TODO
+  let num = [];
+  let num2 = [];
+  for(let i = 0; i<p.TAU; i+=0.1){
+    num=createArray(p,i);
+    num2=shiftArray(num,num.length);
+    renderIntersectionTexture(num, num2, p)
   }
   p.pop();
-  */
 }
 
 /** OTHER */
