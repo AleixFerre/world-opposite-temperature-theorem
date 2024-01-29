@@ -1,7 +1,7 @@
 import FastNoiseLite from './assets/FastNoiseLite.js';
 
 const noiseLevel = 6;
-const noiseRadius = 0.4;
+const noiseRadius = 1.2;
 const increment = 0.001;
 const peixet = 0;
 let amount;
@@ -81,7 +81,7 @@ function draw() {
   stroke(255);
   strokeWeight(2);
   let pos = []
-  pos = [50,50,50+frameCount*0.001];
+  pos = [50,50,50+frameCount*0.005];
   //pos = [50,50,50];
   fillGrid(pos);
   //createPointsPerPixel(pos);
