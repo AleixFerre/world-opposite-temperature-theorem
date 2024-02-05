@@ -1,7 +1,7 @@
 let myShader;
 const fpsCounter = document.getElementById('fps');
 
-const textureResMult = 3.5;
+const textureResMult = 2;
 let _w, _h;
 
 function preload() {
