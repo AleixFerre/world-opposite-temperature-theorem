@@ -1,6 +1,8 @@
 let myShader;
-const l_width = 1600;
-const l_height = 1600;
+const fpsCounter = document.getElementById('fps');
+
+const textureResMult = 3.5;
+let _w, _h;
 
 function preload() {
   // load each shader file (don't worry, we will come back to these!)
@@ -10,36 +12,32 @@ function preload() {
 
 function setup() {
   // the canvas has to be created with WEBGL mode
-  createCanvas(l_width, l_height, WEBGL);
+  createCanvas(windowWidth, windowHeight - 40, WEBGL);
+  setFrameRate(200);
 
-  //textGraphics = createGraphics(windowWidth, windowHeight);
-  buffer = createGraphics(l_width, l_height, WEBGL);
-  buffer.noStroke();
+  _w = windowWidth * textureResMult;
+  _h = (windowHeight - 40) * textureResMult;
+  console.log(_w, _h);
+  buffer = createGraphics(_w, _h, WEBGL);
 }
 
 function draw() {
   background(33);
   orbitControl();
-  buffer.background(0,0,0,0);
-  //image(buffer, 0, 0, 50, 50);
-  buffer.image(img_a,-l_width/2,-l_height/2,l_width,l_height);;
+
+  fpsCounter.innerHTML = 'FPS: ' + floor(frameRate());
+
+  buffer.background(0, 0);
+  buffer.image(img_a, -_w / 2, -_h / 2, _w, _h);
   buffer.shader(myShader);
-  // shader() sets the active shader, which will be applied to what is drawn next
-  //shader(myShader);
-  
-  //pointsTexture = createImage(l_width, l_height, 0);
 
-  myShader.setUniform('width', l_width);
-  myShader.setUniform('height', l_height);
-  myShader.setUniform('time', millis()/15);
+  myShader.setUniform('width', _w);
+  myShader.setUniform('height', _h);
+  myShader.setUniform('time', millis() / 15);
 
-  //myShader.copyToContext(pointsTexture);
-
-  // apply the shader to a rectangle taking up the full canvas
   texture(buffer);
-  
-  //buffer.rect(0,0,l_width, l_height);
-  buffer.rect(0,0,l_width, l_height);
-  sphere(400, 32, 32);
-  //rect(0, 0, l_width, l_height);
+
+  buffer.rect(0, 0, _w, _h);
+  noStroke();
+  sphere(350);
 }

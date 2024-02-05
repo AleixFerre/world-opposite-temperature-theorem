@@ -4,20 +4,11 @@ float TAU = 6.28318530718;
 float PI = 3.14159265359;
 float noiseLevel = 1.;
 float noiseRadius = 1.4;
-//Variables
 
 uniform float time;
 uniform float width;
 uniform float height;
 
-//asdasdasd
-varying vec2 vTexCoord;
-
-uniform sampler2D tex0;
-uniform vec2 userMouse;
-
-
-// Noise
 vec3 mod289(vec3 x) {
   return x - floor(x * (1.0 / 289.0)) * 289.0;
 }
@@ -63,9 +54,6 @@ float noise(vec3 P) {
   vec4 nz = mix(vec4(dot(g0, vec3(f0.x, f0.y, f0.z)), dot(g1, vec3(f1.x, f0.y, f0.z)), dot(g2, vec3(f0.x, f1.y, f0.z)), dot(g3, vec3(f1.x, f1.y, f0.z))), vec4(dot(g4, vec3(f0.x, f0.y, f1.z)), dot(g5, vec3(f1.x, f0.y, f1.z)), dot(g6, vec3(f0.x, f1.y, f1.z)), dot(g7, vec3(f1.x, f1.y, f1.z))), f.z);
   return 2.2 * mix(mix(nz.x, nz.z, f.y), mix(nz.y, nz.w, f.y), f.x);
 }
-float noise(vec2 P) {
-  return noise(vec3(P, 0.0));
-}
 vec2 createPointPair(float t, float phi, vec3 pos) {
   float sp = sin(phi);
   float cp = cos(phi);
@@ -73,83 +61,29 @@ vec2 createPointPair(float t, float phi, vec3 pos) {
   float ct = cos(t);
   float spp = sin(phi + PI);
   float cpp = cos(phi + PI);
-  float stt = sin(t + PI);
-  float ctt = cos(t) + PI;
 
   float point_original = noiseLevel * noise(vec3(noiseRadius * sp * ct + pos[0], noiseRadius * sp * st + pos[1], noiseRadius * cp + pos[2]));
   float point_inverse = noiseLevel * noise(vec3(noiseRadius * spp * ct + pos[0], noiseRadius * spp * st + pos[1], noiseRadius * cpp + pos[2]));
   return vec2(point_original, point_inverse);
 }
-vec2 createPointPairAtPosition(float x,float y,vec3 pos){
-  float phi = y/height*PI;
-  float t = x/width*TAU;
-  return  createPointPair(t,phi,pos);
+vec2 createPointPairAtPosition(float x, float y, vec3 pos) {
+  float phi = y / height * PI;
+  float t = x / width * TAU;
+  return createPointPair(t, phi, pos);
 }
 
 void main() {
-  
-  vec3 color;
-
   float x = gl_FragCoord.x;
   float y = gl_FragCoord.y;
-  float z = 50.;
 
-  vec3 pos = vec3(50.,50.,50.+time/1000.);
+  vec3 pos = vec3(50., 50., 50. + time / 1000.);
 
-  vec2 points = createPointPairAtPosition(x,y,pos);
+  vec2 points = createPointPairAtPosition(x, y, pos);
 
   float peixet = 0.007;
-  gl_FragColor = vec4(0,0,0, 0);
-  /*
-  if(points.x - points.y < peixet+0.1 && points.x - points.y > -peixet-0.1){
-    gl_FragColor = vec4(.5,.5,1, 1.);
-  }*/
-  if(points.x - points.y < peixet && points.x - points.y > -peixet){
-    gl_FragColor = vec4(.5,1,1, 0.6);
-  }
-  
-  //gl_FragColor = vec4(0,255,0, 1.);
-}
-/*
-void main() {
-  vec2 uv = vTexCoord;
-  
-  // uv.x = 
-  // uv.x *= 1.0 - (sin(uv.x + (time/1000.0))) / 20.0;
-  // uv.y += (cos(uv.y + (time/1000.0))) / 10.0;
-  
-  vec4 src = texture2D(tex0, vec2(uv.x,1.0-uv.y));   
-  
-  float horizontal = uv.x;
-  float vertical = uv.y;
-  
-  // uv.x *= 2.0;    
-  // uv.x = mod(uv.x,1.0);
-  // uv.y *= 2.0;
-  // uv.y = mod(uv.y,1.0);
-  
-  // uv.x = sin(uv.x);
-  // uv.y = cos(uv.y);
-  
-  // uv.x = step(uv.x,0.5);
-  // uv.y = step(uv.y,0.5);
-  
-  float value = 1.0 - distance(uv, userMouse) * 1.5;
-  
-  value = clamp(value,0.0,1.0);
-    
-  
-  vec3 myColor = vec3(value) * vec3(uv.x,uv.y,value);
-  
-  // add the text on top and mask with the distance value
-  myColor += src.rgb * value;
-  
-  float line = step(value,mod(time/1000.0,1.0)); 
-  
-  // myColor += line;
-  
-  // and now this color is to the current pixel
-  gl_FragColor = vec4(myColor,1.0);
+  gl_FragColor = vec4(0, 0, 0, 0);
 
+  if(points.x - points.y < peixet && points.x - points.y > -peixet) {
+    gl_FragColor = vec4(.5, 1, 1, 0.6);
+  }
 }
-*/
